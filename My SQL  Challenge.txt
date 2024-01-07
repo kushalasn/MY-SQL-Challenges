@@ -1,0 +1,354 @@
+select firstName,lastName,city,state 
+from Person
+left join Address
+on Address.personId=  Person.personId
+
+
+select e1.name as Employee
+from Employee as e1
+join employee as e2
+on e1.managerId=e2.id
+where e1.salary>e2.salary and e1.managerId is not null
+
+
+select email
+from Person
+group by email
+having count(email)>1
+
+
+select c.name as customers
+from customers as c
+left join orders as o
+on c.id=o.customerid
+where o.customerid is null
+
+delete p2
+from person p1
+join person p2
+where p1.email=p2.email and p1.id<p2.id 
+
+select w2.id
+from weather as w1, weather as w2
+where datediff(w2.recordDate,w1.recordDate)=1 and w2.temperature>w1.temperature
+
+select player_id,min(event_date) as first_login
+from activity
+group by player_id
+
+SELECT E.NAME, 
+       B.BONUS 
+FROM EMPLOYEE E LEFT JOIN BONUS B ON E.EMPID = B.EMPID 
+WHERE B.BONUS<1000 OR B.BONUS IS NULL;
+
+select name
+from customer
+where id not in (select id
+                 from customer
+                 where referee_id=2)
+
+
+select customer_number
+from orders
+group by customer_number
+order by count(order_number) desc
+limit 1
+
+
+select  name,population,area
+from world
+where area>=3000000 or population>=25000000
+
+
+select class
+from courses
+group by class
+having count(class)>=5
+
+select s.name
+from salesperson as s
+where s.sales_id not in (select o.sales_id
+                        from company as c
+                        join orders as o
+                        on c.com_id=o.com_id
+                        where c.name='RED')
+
+
+
+SELECT *,
+       CASE WHEN X+Y>Z AND Y+Z>X AND X+Z>Y THEN "Yes"
+            ELSE "No"
+       END AS TRIANGLE
+FROM TRIANGLE;
+
+
+
+select 
+(
+    select num 
+    from MyNumbers
+    group by num 
+    having count(*)=1 
+    order by num desc 
+    limit 1
+) num
+
+
+
+select *
+from cinema
+where id%2!=0
+having description !='boring'
+order by rating desc
+
+
+UPDATE Salary
+SET sex=
+       case when sex='m' then "f"
+       else "m"
+       end
+
+
+
+select actor_id,director_id
+from ActorDirector
+group by actor_id,director_id
+having count(director_id)>=3
+
+select product_name,year,price
+from Sales
+left join Product
+on Product.product_id = Sales.product_id
+
+
+SELECT P.PROJECT_ID, ROUND(AVG(E.EXPERIENCE_YEARS),2) AS AVERAGE_YEARS FROM PROJECT P LEFT JOIN EMPLOYEE E
+ON P.EMPLOYEE_ID = E.EMPLOYEE_ID 
+GROUP BY P.PROJECT_ID;
+
+SELECT PRODUCT_ID, 
+       PRODUCT_NAME 
+FROM PRODUCT
+WHERE PRODUCT_ID NOT IN (SELECT PRODUCT_ID FROM SALES WHERE SALE_DATE NOT BETWEEN "2019-01-01" AND "2019-03-31");
+
+
+select distinct activity_date as day,count(distinct user_id)  as active_users
+from Activity 
+where activity_date between '2019-06-28' and '2019-07-27'
+group by activity_date
+
+
+select distinct author_id as id
+from views
+where author_id=viewer_id
+order by id
+
+select id,max(case when month='Jan' then revenue else null end) as Jan_Revenue,
+          max(case when month='Feb' then revenue else null end) as Feb_Revenue,
+          max(case when month='Mar' then revenue else null end) as Mar_Revenue,
+          max(case when month='Apr' then revenue else null end) as Apr_Revenue,
+          max(case when month='May' then revenue else null end) as May_Revenue,
+          max(case when month='Jun' then revenue else null end) as Jun_Revenue,
+          max(case when month='Jul' then revenue else null end) as Jul_Revenue,
+          max(case when month='Aug' then revenue else null end) as Aug_Revenue,
+          max(case when month='Sep' then revenue else null end) as Sep_Revenue,
+          max(case when month='Oct' then revenue else null end) as Oct_Revenue,
+          max(case when month='Nov' then revenue else null end) as Nov_Revenue,
+          max(case when month='Dec' then revenue else null end) as Dec_Revenue
+from department
+group by id
+
+
+select query_name,round(sum(rating/position)/count(rating),2) as quality,round(sum(case when rating <3 then 1 else 0  end)/count(*)*100,2) as poor_query_percentage
+from queries
+group by query_name 
+
+
+
+select p.product_id as product_id, round(sum(u.units*p.price)/sum(u.units),2) as average_price
+from prices as p
+join unitssold as u
+on p.product_id=u.product_id 
+where u.purchase_date between p.start_date and p.end_date
+group by p.product_id
+
+with cte1 as
+(select *
+from students cross join
+subjects ),
+
+cte2 as 
+( 
+  select student_id,subject_name,count(subject_name) as ct
+  from examinations
+  group by student_id,subject_name
+
+)
+
+
+
+select cte1.student_id as student_id,cte1.student_name as student_name,cte1.subject_name as subject_name, ifnull(ct,0) as attended_exams
+from cte1 left join cte2
+on cte1.student_id=cte2.student_id
+and cte1.subject_name=cte2.subject_name
+order by student_id,subject_name
+
+
+
+select product_name,sum(unit) unit
+# ,date_format(order_date,'%m'),date_format(order_date,'%y')
+from Products p
+left join Orders o
+on p.product_id=o.product_id
+where date_format(order_date,'%m')=02 and date_format(order_date,'%y')=20 
+group by product_name
+having sum(unit)>=100
+
+
+select u.unique_id,e.name
+from employees as e
+left join employeeuni as u
+on e.id=u.id
+
+select u.name as 'name',ifnull(sum(r.distance),0)  as 'travelled_distance'
+from users as u
+left join rides as r
+on u.id=r.user_id
+group by r.user_id
+order by travelled_distance desc,name
+
+
+select sell_date,count(distinct product) as num_sold, group_concat(distinct product order by product asc separator ',') as products
+from activities
+group by sell_date
+
+select *
+from users
+where mail regexp '^[a-zA-Z][A-Za-z0-9._-]*@leetcode\\.com'
+
+
+
+select *
+from patients
+where conditions like '% DIAB1%' OR conditions like 'DIAB1%'
+
+
+
+SELECT CUSTOMER_ID, COUNT(*) AS COUNT_NO_TRANS 
+FROM VISITS
+WHERE VISIT_ID NOT IN (SELECT DISTINCT VISIT_ID FROM TRANSACTIONS)
+GROUP BY CUSTOMER_ID;
+
+
+
+SELECT U.NAME, SUM(T.AMOUNT) AS BALANCE 
+FROM USERS U JOIN TRANSACTIONS T
+ON U.ACCOUNT = T.ACCOUNT
+GROUP BY T.ACCOUNT
+HAVING SUM(T.AMOUNT)>10000;
+
+with t1 as
+(select count(distinct user_id) cnt from Users)
+
+select r.contest_id, round(count(distinct r.user_id)/t1.cnt *100,2) percentage
+from Register r,t1
+group by contest_id
+order by percentage desc,contest_id
+
+
+select a.machine_id , ROUND(avg(a.timestamp-b.timestamp),3) processing_time
+from Activity a
+left join Activity b
+on a.machine_id=b.machine_id
+and a.process_id=b.process_id
+where b.activity_type='start' and  a.activity_type='end'
+group by a.machine_id
+
+select user_id,concat(LEFT(UPPER(NAME),1),RIGHT(lower(NAME),char_length(NAME)-1)) name from
+Users
+order by user_id
+
+
+select tweet_id
+from tweets
+where length(content)>=16
+
+
+select date_id, make_name, count(distinct(lead_id)) as unique_leads, count(distinct(partner_id)) as unique_partners from DailySales
+group by date_id,make_name
+
+select tweet_id
+from tweets
+where length(content)>=16
+
+select date_id, make_name, count(distinct(lead_id)) as unique_leads, count(distinct(partner_id)) as unique_partners from DailySales
+group by date_id,make_name
+
+
+
+select user_id,count(follower_id) as followers_count
+from followers
+group by user_id
+order by user_id
+
+
+SELECT REPORTS_TO AS EMPLOYEE_ID, 
+        MANAGER AS NAME,
+        COUNT(EMPLOYEE_ID) AS REPORTS_COUNT, 
+        ROUND(AVG(AGE)) AS AVERAGE_AGE
+FROM (
+    SELECT E1.*, E2.NAME AS MANAGER
+    FROM EMPLOYEES E1 JOIN EMPLOYEES E2 
+    ON E1.REPORTS_TO = E2.EMPLOYEE_ID) T
+GROUP BY REPORTS_TO
+ORDER BY EMPLOYEE_ID;
+
+
+
+select event_day as day,emp_id,sum(out_time-in_time) as total_time
+from employees
+group by emp_id,event_day
+
+
+select product_id,"store1" as store,store1 as price
+from products
+where store1 is not null 
+union
+select product_id,"store2" as store,store2 as price
+from products
+where store2 is not null 
+union
+select product_id,"store3" as store,store3 as price
+from products
+where store3 is not null 
+
+
+SELECT T.EMPLOYEE_ID, T.DEPARTMENT_ID FROM
+(SELECT EMPLOYEE_ID, DEPARTMENT_ID, DENSE_RANK() OVER (PARTITION BY EMPLOYEE_ID ORDER BY PRIMARY_FLAG) AS RNK FROM EMPLOYEE) T WHERE T.RNK=1;
+
+
+select employee_id
+from employees 
+where (salary<30000) and manager_id not in (select employee_id from employees)
+order by employee_id 
+
+select employee_id  
+from  employees 
+where employee_id not in (select e.employee_id
+                           from employees as e
+                           join salaries as s
+                           on e.employee_id=s.employee_id)
+union
+select employee_id  
+from  salaries 
+where employee_id not in (select e.employee_id
+                           from employees as e
+                           join salaries as s
+                           on e.employee_id=s.employee_id)
+                           order by employee_id 
+
+
+
+
+select employee_id, (case when employee_id%2!=0 and name NOT like 'M%' then salary else 0 END) as bonus from Employees
+ 
+                               
